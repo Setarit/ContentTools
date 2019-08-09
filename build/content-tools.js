@@ -5544,7 +5544,7 @@
 }).call(this);
 
 (function() {
-  var AttributeUI, ContentTools, CropMarksUI, StyleUI, exports, _EditorApp,
+  var AttributeUI, ContentTools, CropMarksUI, ExternalImageTool, StyleUI, exports, _EditorApp,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -10725,6 +10725,28 @@
     };
 
     return Remove;
+
+  })(ContentTools.Tool);
+
+  ExternalImageTool = (function(_super) {
+    __extends(ExternalImageTool, _super);
+
+    function ExternalImageTool() {
+      return ExternalImageTool.__super__.constructor.apply(this, arguments);
+    }
+
+    ContentTools.ToolShelf.stow(ExternalImageTool, 'external-image');
+
+    ExternalImageTool.label = 'External Image';
+
+    ExternalImageTool.icon = 'image';
+
+    ExternalImageTool.canApply = function(element, selection) {
+      console.log(element, selection);
+      return false;
+    };
+
+    return ExternalImageTool;
 
   })(ContentTools.Tool);
 

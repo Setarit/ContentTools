@@ -39,6 +39,9 @@ module.exports = (grunt) ->
                         'src/scripts/history.coffee'
                         'src/scripts/styles.coffee'
                         'src/scripts/tools.coffee'
+
+                        # Custom tools for slides
+                        'src/scripts/custom/external-image.coffee'
                     ]
 
             sandbox:
