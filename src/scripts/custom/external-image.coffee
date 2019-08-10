@@ -1,3 +1,10 @@
+#DIALOGS
+class ExternalImageLinkDialog extends ContentTools.DialogUI
+	constructor: () ->
+		super('Insert external image')
+
+
+#TOOLS
 class ExternalImageTool extends ContentTools.Tool
 
 	ContentTools.ToolShelf.stow(@, 'external-image')
@@ -13,4 +20,12 @@ class ExternalImageTool extends ContentTools.Tool
                 return false
         return true
 
-	
+    @apply: (element, selection, callback) ->
+    	app = ContentTools.EditorApp.get()
+    	modal = new ContentTools.ModalUI()
+    	dialog = new ExternalImageLinkDialog()
+
+    	app.attach(modal)
+    	app.attach(dialog)
+    	modal.show()
+    	dialog.show()
