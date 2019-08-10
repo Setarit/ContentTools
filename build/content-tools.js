@@ -10812,9 +10812,26 @@
         this._domPreview = void 0;
       }
       this._domPreview = document.createElement('img');
+      this._domPreview.setAttribute('id', 'ct-external-image-dialog-preview-image');
       this._domPreview.setAttribute('style', 'width: auto; height: 100%');
       this._domPreview.setAttribute('src', url);
       return this._domView.appendChild(this._domPreview);
+    };
+
+    ExternalImageLinkDialog.prototype.getOriginalImageSize = function() {
+      var image;
+      image = document.getElementById('ct-external-image-dialog-preview-image');
+      if (image) {
+        return {
+          'w': image.naturalWidth,
+          'h': image.naturalHeight
+        };
+      } else {
+        return {
+          'w': '600',
+          'h': '400'
+        };
+      }
     };
 
     ExternalImageLinkDialog.prototype.save = function() {
@@ -10822,8 +10839,8 @@
       data = {
         src: this._domInput.value.trim(),
         alt: this._domDescriptionInput.value.trim(),
-        height: '150',
-        width: '200'
+        height: this.getOriginalImageSize().h,
+        width: this.getOriginalImageSize().w
       };
       return this.dispatchEvent(this.createEvent('save', data));
     };
@@ -10882,14 +10899,7 @@
       })(this));
       dialog.addEventListener('save', (function(_this) {
         return function(ev) {
-          var attrs, image, index, node, _ref;
-          attrs = {
-            src: ev.detail().url,
-            alt: ev.detail().alt,
-            height: ev.detail().height,
-            width: ev.detail().width
-          };
-          console.log(attrs);
+          var image, index, node, _ref;
           image = new ContentEdit.Image(ev.detail());
           _ref = _this._insertAt(element), node = _ref[0], index = _ref[1];
           node.parent().attach(image, index);

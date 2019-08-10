@@ -99,16 +99,24 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
 
         # Insert the preview iframe
         @_domPreview = document.createElement('img')
+        @_domPreview.setAttribute('id', 'ct-external-image-dialog-preview-image')
         @_domPreview.setAttribute('style', 'width: auto; height: 100%')
         @_domPreview.setAttribute('src', url)
         @_domView.appendChild(@_domPreview)
+
+    getOriginalImageSize: () ->
+        image = document.getElementById('ct-external-image-dialog-preview-image')
+        if image
+            return {'w': image.naturalWidth, 'h': image.naturalHeight}
+        else
+            return {'w': '600', 'h': '400'} #fallback older browsers
 
     save: () ->
         data = {
             src: @_domInput.value.trim(), 
             alt : @_domDescriptionInput.value.trim(),
-            height : '150',
-            width : '200',
+            height : @getOriginalImageSize().h,
+            width : @getOriginalImageSize().w,
         }
         @dispatchEvent(@createEvent('save', data))
 
