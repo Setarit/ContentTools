@@ -1,4 +1,4 @@
-#DIALOGS
+# EXTERNAL IMAGE
 class ExternalImageLinkDialog extends ContentTools.DialogUI
     constructor: () ->
         super('Insert external image')
@@ -104,15 +104,15 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
         @_domView.appendChild(@_domPreview)
 
     save: () ->
-        @dispatchEvent(@createEvent('save', {'url': @_domInput.value.trim(), 'alt' : @_domDescriptionInput.value.trim()}))
+        data = {
+            src: @_domInput.value.trim(), 
+            alt : @_domDescriptionInput.value.trim(),
+            height : '150',
+            width : '200',
+        }
+        @dispatchEvent(@createEvent('save', data))
 
 
-
-
-
-
-
-#TOOLS
 class ExternalImageTool extends ContentTools.Tool
     ContentTools.ToolShelf.stow(@, 'external-image')
 
@@ -128,6 +128,15 @@ class ExternalImageTool extends ContentTools.Tool
         return true
 
     @apply: (element, selection, callback) ->
+        # Dispatch `apply` event
+        toolDetail = {
+            'tool': this,
+            'element': element,
+            'selection': selection
+            }
+        if not @dispatchEditorEvent('tool-apply', toolDetail)
+            return
+
         #If supported allow store the state for restoring once the dialog is
         # cancelled.
         if element.storeState
@@ -141,14 +150,25 @@ class ExternalImageTool extends ContentTools.Tool
         dialog.addEventListener 'cancel', () =>
             modal.hide()
             dialog.hide()
+            if element.restoreState
+                element.restoreState()
             callback(false)
 
         #support saving
         dialog.addEventListener 'save', (ev) =>
-            console.log(ev);
+            image = new ContentEdit.Image(ev.detail())
+            # Find insert position
+            [node, index] = @_insertAt(element)
+            node.parent().attach(image, index)
+
+            # Focus the new image
+            image.focus()
+
             modal.hide()
             dialog.hide()
             callback(true)
+
+            @dispatchEditorEvent('tool-applied', toolDetail)
 
         app.attach(modal)
         app.attach(dialog)

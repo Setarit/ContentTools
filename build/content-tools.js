@@ -10818,10 +10818,14 @@
     };
 
     ExternalImageLinkDialog.prototype.save = function() {
-      return this.dispatchEvent(this.createEvent('save', {
-        'url': this._domInput.value.trim(),
-        'alt': this._domDescriptionInput.value.trim()
-      }));
+      var data;
+      data = {
+        src: this._domInput.value.trim(),
+        alt: this._domDescriptionInput.value.trim(),
+        height: '150',
+        width: '200'
+      };
+      return this.dispatchEvent(this.createEvent('save', data));
     };
 
     return ExternalImageLinkDialog;
@@ -10851,7 +10855,15 @@
     };
 
     ExternalImageTool.apply = function(element, selection, callback) {
-      var app, dialog, modal;
+      var app, dialog, modal, toolDetail;
+      toolDetail = {
+        'tool': this,
+        'element': element,
+        'selection': selection
+      };
+      if (!this.dispatchEditorEvent('tool-apply', toolDetail)) {
+        return;
+      }
       if (element.storeState) {
         element.storeState();
       }
@@ -10862,15 +10874,30 @@
         return function() {
           modal.hide();
           dialog.hide();
+          if (element.restoreState) {
+            element.restoreState();
+          }
           return callback(false);
         };
       })(this));
       dialog.addEventListener('save', (function(_this) {
         return function(ev) {
-          console.log(ev);
+          var attrs, image, index, node, _ref;
+          attrs = {
+            src: ev.detail().url,
+            alt: ev.detail().alt,
+            height: ev.detail().height,
+            width: ev.detail().width
+          };
+          console.log(attrs);
+          image = new ContentEdit.Image(ev.detail());
+          _ref = _this._insertAt(element), node = _ref[0], index = _ref[1];
+          node.parent().attach(image, index);
+          image.focus();
           modal.hide();
           dialog.hide();
-          return callback(true);
+          callback(true);
+          return _this.dispatchEditorEvent('tool-applied', toolDetail);
         };
       })(this));
       app.attach(modal);
