@@ -10735,6 +10735,24 @@
       ExternalImageLinkDialog.__super__.constructor.call(this, 'Insert external image');
     }
 
+    ExternalImageLinkDialog.prototype.mount = function() {
+      var domControlGroup;
+      ExternalImageLinkDialog.__super__.mount.call(this);
+      ContentEdit.addCSSClass(this._domElement, 'ct-external-image-dialog');
+      ContentEdit.addCSSClass(this._domView, 'ct-external-image-dialog-preview');
+      domControlGroup = this.constructor.createDiv(['ct-control-group']);
+      this._domControls.appendChild(domControlGroup);
+      this._domInput = document.createElement('input');
+      this._domInput.setAttribute('class', 'ct-external-image-dialog__input');
+      this._domInput.setAttribute('name', 'url');
+      this._domInput.setAttribute('placeholder', ContentEdit._('Paste the link to the image') + '...');
+      this._domInput.setAttribute('type', 'text');
+      domControlGroup.appendChild(this._domInput);
+      this._domButton = this.constructor.createDiv(['ct-control', 'ct-control--text', 'ct-control--insert', 'ct-control--muted']);
+      this._domButton.textContent = ContentEdit._('Insert');
+      return domControlGroup.appendChild(this._domButton);
+    };
+
     return ExternalImageLinkDialog;
 
   })(ContentTools.DialogUI);
@@ -10763,9 +10781,27 @@
 
     ExternalImageTool.apply = function(element, selection, callback) {
       var app, dialog, modal;
+      if (element.storeState) {
+        element.storeState();
+      }
       app = ContentTools.EditorApp.get();
       modal = new ContentTools.ModalUI();
       dialog = new ExternalImageLinkDialog();
+      dialog.addEventListener('cancel', (function(_this) {
+        return function() {
+          modal.hide();
+          dialog.hide();
+          return callback(false);
+        };
+      })(this));
+      dialog.addEventListener('save', (function(_this) {
+        return function(ev) {
+          console.log(ev);
+          modal.hide();
+          dialog.hide();
+          return callback(true);
+        };
+      })(this));
       app.attach(modal);
       app.attach(dialog);
       modal.show();
