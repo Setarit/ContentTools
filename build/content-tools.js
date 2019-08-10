@@ -5544,7 +5544,7 @@
 }).call(this);
 
 (function() {
-  var AttributeUI, ContentTools, CropMarksUI, ExternalImageLinkDialog, ExternalImageTool, StyleUI, exports, _EditorApp,
+  var AttributeUI, ContentTools, CropMarksUI, ExternalImageLinkDialog, ExternalImageTool, ExternalPageDialog, ExternalPageTool, StyleUI, exports, _EditorApp,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -10917,6 +10917,174 @@
     };
 
     return ExternalImageTool;
+
+  })(ContentTools.Tool);
+
+  ExternalPageDialog = (function(_super) {
+    __extends(ExternalPageDialog, _super);
+
+    function ExternalPageDialog() {
+      ExternalPageDialog.__super__.constructor.call(this, 'Insert external page');
+    }
+
+    ExternalPageDialog.prototype.mount = function() {
+      var domControlGroup;
+      ExternalPageDialog.__super__.mount.call(this);
+      ContentEdit.addCSSClass(this._domElement, 'ct-external-page-dialog');
+      ContentEdit.addCSSClass(this._domView, 'ct-external-page-dialog-preview');
+      domControlGroup = this.constructor.createDiv(['ct-control-group']);
+      this._domControls.appendChild(domControlGroup);
+      this._domInput = document.createElement('input');
+      this._domInput.setAttribute('class', 'ct-external-page-dialog-url-input');
+      this._domInput.setAttribute('name', 'url');
+      this._domInput.setAttribute('placeholder', ContentEdit._('Paste the link to the page') + '...');
+      this._domInput.setAttribute('type', 'url');
+      domControlGroup.appendChild(this._domInput);
+      this._domButton = this.constructor.createDiv(['ct-control', 'ct-control--text', 'ct-control--insert', 'ct-control--muted']);
+      this._domButton.textContent = ContentEdit._('Insert');
+      domControlGroup.appendChild(this._domButton);
+      this.displaypagePreviewHelp();
+      return this._addDOMEventListeners();
+    };
+
+    ExternalPageDialog.prototype._addDOMEventListeners = function() {
+      ExternalPageDialog.__super__._addDOMEventListeners.call(this);
+      this._canSave = false;
+      this._domInput.addEventListener('input', (function(_this) {
+        return function(ev) {
+          var url;
+          _this._updateCanSave();
+          if (ev.target.value) {
+            url = _this._domInput.value.trim();
+            return _this.preview(url);
+          }
+        };
+      })(this));
+      return this._domButton.addEventListener('click', (function(_this) {
+        return function(ev) {
+          ev.preventDefault();
+          if (_this._canSave) {
+            return _this.save();
+          }
+        };
+      })(this));
+    };
+
+    ExternalPageDialog.prototype._updateCanSave = function() {
+      this._canSave = this._domInput && this._domInput.value.trim();
+      if (this._canSave) {
+        return ContentEdit.removeCSSClass(this._domButton, 'ct-control--muted');
+      } else {
+        return ContentEdit.addCSSClass(this._domButton, 'ct-control--muted');
+      }
+    };
+
+    ExternalPageDialog.prototype.displaypagePreviewHelp = function() {
+      this._domPreview = document.createElement('p');
+      this._domPreview.setAttribute('class', 'ct-external-page-dialog-preview-text');
+      this._domPreview.innerHTML = ContentEdit._('Please provide a valid page url. Be aware that not all websites allow to be embedded');
+      this._domPreview.setAttribute('style', 'text-align: center');
+      return this._domView.appendChild(this._domPreview);
+    };
+
+    ExternalPageDialog.prototype.preview = function(url) {
+      if (this._domPreview) {
+        this._domPreview.parentNode.removeChild(this._domPreview);
+        this._domPreview = void 0;
+      }
+      this._domPreview = document.createElement('iframe');
+      this._domPreview.setAttribute('frameborder', '0');
+      this._domPreview.setAttribute('height', '100%');
+      this._domPreview.setAttribute('src', url);
+      this._domPreview.setAttribute('width', '100%');
+      return this._domView.appendChild(this._domPreview);
+    };
+
+    ExternalPageDialog.prototype.save = function() {
+      var data;
+      data = {
+        src: this._domInput.value.trim()
+      };
+      return this.dispatchEvent(this.createEvent('save', data));
+    };
+
+    return ExternalPageDialog;
+
+  })(ContentTools.DialogUI);
+
+  ExternalPageTool = (function(_super) {
+    __extends(ExternalPageTool, _super);
+
+    function ExternalPageTool() {
+      return ExternalPageTool.__super__.constructor.apply(this, arguments);
+    }
+
+    ContentTools.ToolShelf.stow(ExternalPageTool, 'external-page');
+
+    ExternalPageTool.label = 'External Page';
+
+    ExternalPageTool.icon = 'image';
+
+    ExternalPageTool.canApply = function(element, selection) {
+      if (element.isFixed()) {
+        if (element.type() !== 'ImageFixture') {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    ExternalPageTool.apply = function(element, selection, callback) {
+      var app, dialog, modal, toolDetail;
+      toolDetail = {
+        'tool': this,
+        'element': element,
+        'selection': selection
+      };
+      if (!this.dispatchEditorEvent('tool-apply', toolDetail)) {
+        return;
+      }
+      if (element.storeState) {
+        element.storeState();
+      }
+      app = ContentTools.EditorApp.get();
+      modal = new ContentTools.ModalUI();
+      dialog = new ExternalPageDialog();
+      dialog.addEventListener('cancel', (function(_this) {
+        return function() {
+          modal.hide();
+          dialog.hide();
+          if (element.restoreState) {
+            element.restoreState();
+          }
+          return callback(false);
+        };
+      })(this));
+      dialog.addEventListener('save', (function(_this) {
+        return function(ev) {
+          var attrs, image, index, node, _ref;
+          attrs = {
+            src: ev.detail().src,
+            width: '200',
+            height: '200'
+          };
+          image = new ContentEdit.Video('iframe', attrs);
+          _ref = _this._insertAt(element), node = _ref[0], index = _ref[1];
+          node.parent().attach(image, index);
+          image.focus();
+          modal.hide();
+          dialog.hide();
+          callback(true);
+          return _this.dispatchEditorEvent('tool-applied', toolDetail);
+        };
+      })(this));
+      app.attach(modal);
+      app.attach(dialog);
+      modal.show();
+      return dialog.show();
+    };
+
+    return ExternalPageTool;
 
   })(ContentTools.Tool);
 

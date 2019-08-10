@@ -32,3 +32,38 @@
 		transform: translate(-50%, -50%);
 	}
 }
+
+.ct-external-page-dialog {
+	height: auto !important;
+
+	& .ct-dialog__controls {
+		margin-bottom: 16px;
+	}
+
+	&-url-input, &-description-input {
+		border: none;
+		border-bottom-color: currentcolor;
+		border-bottom-style: none;
+		border-bottom-width: medium;
+		border-bottom: 1px solid #eee;
+		height: 32px;
+		line-height: 32px;
+		outline: none;
+		padding: 0 4px;
+		font-family: arial,sans-serif;
+		font-size: 14px;
+		line-height: 18px;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		vertical-align: top;
+		width: 456px;	
+	}
+
+	&-preview-text {
+		display: block;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+}

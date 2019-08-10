@@ -1,16 +1,18 @@
-# EXTERNAL IMAGE
-class ExternalImageLinkDialog extends ContentTools.DialogUI
+# -------------------------------------------------#
+# EXTERNAL PAGE
+# -------------------------------------------------#
+class ExternalPageDialog extends ContentTools.DialogUI
     constructor: () ->
-        super('Insert external image')
+        super('Insert external page')
 
     mount: () ->
         super()
 
         #update dialog class
-        ContentEdit.addCSSClass(@_domElement, 'ct-external-image-dialog')
+        ContentEdit.addCSSClass(@_domElement, 'ct-external-page-dialog')
 
         # update view class
-        ContentEdit.addCSSClass(@_domView, 'ct-external-image-dialog-preview')
+        ContentEdit.addCSSClass(@_domView, 'ct-external-page-dialog-preview')
 
         # add controls
         domControlGroup = @constructor.createDiv(['ct-control-group'])
@@ -18,25 +20,14 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
 
         # input
         @_domInput = document.createElement('input')
-        @_domInput.setAttribute('class', 'ct-external-image-dialog-url-input')
+        @_domInput.setAttribute('class', 'ct-external-page-dialog-url-input')
         @_domInput.setAttribute('name', 'url')
         @_domInput.setAttribute(
             'placeholder',
-            ContentEdit._('Paste the link to the image') + '...'
+            ContentEdit._('Paste the link to the page') + '...'
             )
-        @_domInput.setAttribute('type', 'text')
+        @_domInput.setAttribute('type', 'url')
         domControlGroup.appendChild(@_domInput)
-
-        # description input
-        @_domDescriptionInput = document.createElement('input')
-        @_domDescriptionInput.setAttribute('class', 'ct-external-image-dialog-description-input')
-        @_domDescriptionInput.setAttribute('name', 'description')
-        @_domDescriptionInput.setAttribute(
-            'placeholder',
-            ContentEdit._('Describe the image') + '...'
-            )
-        @_domDescriptionInput.setAttribute('type', 'text')
-        domControlGroup.appendChild(@_domDescriptionInput)
 
         # Insert button
         @_domButton = @constructor.createDiv([
@@ -48,7 +39,7 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
         @_domButton.textContent = ContentEdit._('Insert')
         domControlGroup.appendChild(@_domButton)
 
-        @displayImagePreviewHelp()
+        @displaypagePreviewHelp()
 
         #DOM listeners
         @_addDOMEventListeners()
@@ -60,14 +51,10 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
 
         #provide preview on change of input url
         @_domInput.addEventListener 'input', (ev) =>
-            @_updateInsertButton()
+            @_updateCanSave()
             if ev.target.value
                 url = @_domInput.value.trim()
                 @preview(url)
-
-        #update can save on description change
-        @_domDescriptionInput.addEventListener 'input', (ev) =>
-            @_updateInsertButton()
 
         # Button
         @_domButton.addEventListener 'click', (ev) =>
@@ -77,17 +64,17 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
             if @_canSave
                 @save()
 
-    _updateInsertButton: () ->
-        @_canSave = (@_domInput and @_domInput.value.trim()) and (@_domDescriptionInput and @_domDescriptionInput.value.trim())
+    _updateCanSave: () ->
+        @_canSave = (@_domInput and @_domInput.value.trim())
         if @_canSave
             ContentEdit.removeCSSClass(@_domButton, 'ct-control--muted')
         else
             ContentEdit.addCSSClass(@_domButton, 'ct-control--muted')
 
-    displayImagePreviewHelp: () ->
+    displaypagePreviewHelp: () ->
         @_domPreview = document.createElement('p')
-        @_domPreview.setAttribute('class', 'ct-external-image-dialog-preview-text')
-        @_domPreview.innerHTML = ContentEdit._('Please provide a valid image url and description')
+        @_domPreview.setAttribute('class', 'ct-external-page-dialog-preview-text')
+        @_domPreview.innerHTML = ContentEdit._('Please provide a valid page url. Be aware that not all websites allow to be embedded')
         @_domPreview.setAttribute('style', 'text-align: center')
         @_domView.appendChild(@_domPreview)
 
@@ -98,33 +85,24 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
             @_domPreview = undefined
 
         # Insert the preview iframe
-        @_domPreview = document.createElement('img')
-        @_domPreview.setAttribute('id', 'ct-external-image-dialog-preview-image')
-        @_domPreview.setAttribute('style', 'width: auto; height: 100%')
+        @_domPreview = document.createElement('iframe')
+        @_domPreview.setAttribute('frameborder', '0')
+        @_domPreview.setAttribute('height', '100%')
         @_domPreview.setAttribute('src', url)
+        @_domPreview.setAttribute('width', '100%')
         @_domView.appendChild(@_domPreview)
-
-    getOriginalImageSize: () ->
-        image = document.getElementById('ct-external-image-dialog-preview-image')
-        if image
-            return {'w': image.naturalWidth, 'h': image.naturalHeight}
-        else
-            return {'w': '600', 'h': '400'} #fallback older browsers
 
     save: () ->
         data = {
-            src: @_domInput.value.trim(), 
-            alt : @_domDescriptionInput.value.trim(),
-            height : @getOriginalImageSize().h,
-            width : @getOriginalImageSize().w,
+            src: @_domInput.value.trim(),
         }
         @dispatchEvent(@createEvent('save', data))
 
 
-class ExternalImageTool extends ContentTools.Tool
-    ContentTools.ToolShelf.stow(@, 'external-image')
+class ExternalPageTool extends ContentTools.Tool
+    ContentTools.ToolShelf.stow(@, 'external-page')
 
-    @label = 'External Image'
+    @label = 'External Page'
     @icon = 'image'
     
     @canApply: (element, selection) ->
@@ -152,7 +130,7 @@ class ExternalImageTool extends ContentTools.Tool
 
         app = ContentTools.EditorApp.get()
         modal = new ContentTools.ModalUI()
-        dialog = new ExternalImageLinkDialog()
+        dialog = new ExternalPageDialog()
 
         #support cancelling
         dialog.addEventListener 'cancel', () =>
@@ -164,7 +142,12 @@ class ExternalImageTool extends ContentTools.Tool
 
         #support saving
         dialog.addEventListener 'save', (ev) =>
-            image = new ContentEdit.Image(ev.detail())
+            attrs = {
+                src: ev.detail().src
+                width: '200' #'100%'
+                height: '200'
+            }
+            image = new ContentEdit.Video('iframe', attrs)
             # Find insert position
             [node, index] = @_insertAt(element)
             node.parent().attach(image, index)
@@ -182,4 +165,3 @@ class ExternalImageTool extends ContentTools.Tool
         app.attach(dialog)
         modal.show()
         dialog.show()
-

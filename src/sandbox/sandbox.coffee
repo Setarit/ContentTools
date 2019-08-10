@@ -1,6 +1,7 @@
 window.onload = () ->
 
     ContentTools.IMAGE_UPLOADER = ImageUploader.createImageUploader
+    console.log(ContentTools.DEFAULT_TOOLS);
 
     # Uncomment the following lines to use the cloudinary image uploader
     #CloudinaryImageUploader.CLOUD_NAME = ''

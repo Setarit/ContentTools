@@ -42,6 +42,7 @@ module.exports = (grunt) ->
 
                         # Custom tools for slides
                         'src/scripts/custom/external-image.coffee'
+                        'src/scripts/custom/external-page.coffee'
                     ]
 
             sandbox:
