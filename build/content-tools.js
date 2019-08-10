@@ -10743,14 +10743,85 @@
       domControlGroup = this.constructor.createDiv(['ct-control-group']);
       this._domControls.appendChild(domControlGroup);
       this._domInput = document.createElement('input');
-      this._domInput.setAttribute('class', 'ct-external-image-dialog__input');
+      this._domInput.setAttribute('class', 'ct-external-image-dialog-url-input');
       this._domInput.setAttribute('name', 'url');
       this._domInput.setAttribute('placeholder', ContentEdit._('Paste the link to the image') + '...');
       this._domInput.setAttribute('type', 'text');
       domControlGroup.appendChild(this._domInput);
+      this._domDescriptionInput = document.createElement('input');
+      this._domDescriptionInput.setAttribute('class', 'ct-external-image-dialog-description-input');
+      this._domDescriptionInput.setAttribute('name', 'description');
+      this._domDescriptionInput.setAttribute('placeholder', ContentEdit._('Describe the image') + '...');
+      this._domDescriptionInput.setAttribute('type', 'text');
+      domControlGroup.appendChild(this._domDescriptionInput);
       this._domButton = this.constructor.createDiv(['ct-control', 'ct-control--text', 'ct-control--insert', 'ct-control--muted']);
       this._domButton.textContent = ContentEdit._('Insert');
-      return domControlGroup.appendChild(this._domButton);
+      domControlGroup.appendChild(this._domButton);
+      this.displayImagePreviewHelp();
+      return this._addDOMEventListeners();
+    };
+
+    ExternalImageLinkDialog.prototype._addDOMEventListeners = function() {
+      ExternalImageLinkDialog.__super__._addDOMEventListeners.call(this);
+      this._canSave = false;
+      this._domInput.addEventListener('input', (function(_this) {
+        return function(ev) {
+          var url;
+          _this._updateInsertButton();
+          if (ev.target.value) {
+            url = _this._domInput.value.trim();
+            return _this.preview(url);
+          }
+        };
+      })(this));
+      this._domDescriptionInput.addEventListener('input', (function(_this) {
+        return function(ev) {
+          return _this._updateInsertButton();
+        };
+      })(this));
+      return this._domButton.addEventListener('click', (function(_this) {
+        return function(ev) {
+          ev.preventDefault();
+          if (_this._canSave) {
+            return _this.save();
+          }
+        };
+      })(this));
+    };
+
+    ExternalImageLinkDialog.prototype._updateInsertButton = function() {
+      this._canSave = (this._domInput && this._domInput.value.trim()) && (this._domDescriptionInput && this._domDescriptionInput.value.trim());
+      if (this._canSave) {
+        return ContentEdit.removeCSSClass(this._domButton, 'ct-control--muted');
+      } else {
+        return ContentEdit.addCSSClass(this._domButton, 'ct-control--muted');
+      }
+    };
+
+    ExternalImageLinkDialog.prototype.displayImagePreviewHelp = function() {
+      this._domPreview = document.createElement('p');
+      this._domPreview.setAttribute('class', 'ct-external-image-dialog-preview-text');
+      this._domPreview.innerHTML = ContentEdit._('Please provide a valid image url and description');
+      this._domPreview.setAttribute('style', 'text-align: center');
+      return this._domView.appendChild(this._domPreview);
+    };
+
+    ExternalImageLinkDialog.prototype.preview = function(url) {
+      if (this._domPreview) {
+        this._domPreview.parentNode.removeChild(this._domPreview);
+        this._domPreview = void 0;
+      }
+      this._domPreview = document.createElement('img');
+      this._domPreview.setAttribute('style', 'width: auto; height: 100%');
+      this._domPreview.setAttribute('src', url);
+      return this._domView.appendChild(this._domPreview);
+    };
+
+    ExternalImageLinkDialog.prototype.save = function() {
+      return this.dispatchEvent(this.createEvent('save', {
+        'url': this._domInput.value.trim(),
+        'alt': this._domDescriptionInput.value.trim()
+      }));
     };
 
     return ExternalImageLinkDialog;

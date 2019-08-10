@@ -10,9 +10,6 @@
 /* UI */
 @import "ui/ui";
 
-/* Custom */
-@import "custom/custom";
-
 /**
  * The highlight class below is used to highlight editable regions within the
  * page to users to help them see what they can edit. It's slightly unusual in
@@ -81,3 +78,7 @@
 .ct--pseudo-select {
     background: rgba(black, 0.1);
 }
+
+
+/* Custom */
+@import "custom/custom";

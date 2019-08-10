@@ -82,8 +82,7 @@ module.exports = (grunt) ->
                         ]
 
         sass:
-            options:
-                banner: '/*! <%= pkg.name %> v<%= pkg.version %> by <%= pkg.author.name %> <<%= pkg.author.email %>> (<%= pkg.author.url %>) */'
+            options:                
                 sourcemap: 'none'
 
             build:
@@ -105,8 +104,7 @@ module.exports = (grunt) ->
                         'build/content-tools.min.css'
 
         uglify:
-            options:
-                banner: '/*! <%= pkg.name %> v<%= pkg.version %> by <%= pkg.author.name %> <<%= pkg.author.email %>> (<%= pkg.author.url %>) */\n'
+            options:                
                 mangle: true
 
             build:

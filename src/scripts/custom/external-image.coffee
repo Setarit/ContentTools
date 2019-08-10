@@ -18,7 +18,7 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
 
         # input
         @_domInput = document.createElement('input')
-        @_domInput.setAttribute('class', 'ct-external-image-dialog__input')
+        @_domInput.setAttribute('class', 'ct-external-image-dialog-url-input')
         @_domInput.setAttribute('name', 'url')
         @_domInput.setAttribute(
             'placeholder',
@@ -26,6 +26,17 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
             )
         @_domInput.setAttribute('type', 'text')
         domControlGroup.appendChild(@_domInput)
+
+        # description input
+        @_domDescriptionInput = document.createElement('input')
+        @_domDescriptionInput.setAttribute('class', 'ct-external-image-dialog-description-input')
+        @_domDescriptionInput.setAttribute('name', 'description')
+        @_domDescriptionInput.setAttribute(
+            'placeholder',
+            ContentEdit._('Describe the image') + '...'
+            )
+        @_domDescriptionInput.setAttribute('type', 'text')
+        domControlGroup.appendChild(@_domDescriptionInput)
 
         # Insert button
         @_domButton = @constructor.createDiv([
@@ -36,6 +47,68 @@ class ExternalImageLinkDialog extends ContentTools.DialogUI
             ])
         @_domButton.textContent = ContentEdit._('Insert')
         domControlGroup.appendChild(@_domButton)
+
+        @displayImagePreviewHelp()
+
+        #DOM listeners
+        @_addDOMEventListeners()
+
+    _addDOMEventListeners: () ->
+        super()
+
+        @_canSave = false
+
+        #provide preview on change of input url
+        @_domInput.addEventListener 'input', (ev) =>
+            @_updateInsertButton()
+            if ev.target.value
+                url = @_domInput.value.trim()
+                @preview(url)
+
+        #update can save on description change
+        @_domDescriptionInput.addEventListener 'input', (ev) =>
+            @_updateInsertButton()
+
+        # Button
+        @_domButton.addEventListener 'click', (ev) =>
+            ev.preventDefault()
+
+            # Check if the fields are populated
+            if @_canSave
+                @save()
+
+    _updateInsertButton: () ->
+        @_canSave = (@_domInput and @_domInput.value.trim()) and (@_domDescriptionInput and @_domDescriptionInput.value.trim())
+        if @_canSave
+            ContentEdit.removeCSSClass(@_domButton, 'ct-control--muted')
+        else
+            ContentEdit.addCSSClass(@_domButton, 'ct-control--muted')
+
+    displayImagePreviewHelp: () ->
+        @_domPreview = document.createElement('p')
+        @_domPreview.setAttribute('class', 'ct-external-image-dialog-preview-text')
+        @_domPreview.innerHTML = ContentEdit._('Please provide a valid image url and description')
+        @_domPreview.setAttribute('style', 'text-align: center')
+        @_domView.appendChild(@_domPreview)
+
+    preview: (url) ->
+        #clear preview if any
+        if(@_domPreview)
+            @_domPreview.parentNode.removeChild(@_domPreview)
+            @_domPreview = undefined
+
+        # Insert the preview iframe
+        @_domPreview = document.createElement('img')
+        @_domPreview.setAttribute('style', 'width: auto; height: 100%')
+        @_domPreview.setAttribute('src', url)
+        @_domView.appendChild(@_domPreview)
+
+    save: () ->
+        @dispatchEvent(@createEvent('save', {'url': @_domInput.value.trim(), 'alt' : @_domDescriptionInput.value.trim()}))
+
+
+
+
 
 
 
