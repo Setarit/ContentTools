@@ -11023,7 +11023,7 @@
 
     ExternalPageTool.label = 'External Page';
 
-    ExternalPageTool.icon = 'image';
+    ExternalPageTool.icon = 'external-page';
 
     ExternalPageTool.canApply = function(element, selection) {
       if (element.isFixed()) {

@@ -67,3 +67,9 @@
 		transform: translate(-50%, -50%);
 	}
 }
+
+.ct-tool {
+	&--external-page:before {
+		content: "\e9ca";
+	}
+}

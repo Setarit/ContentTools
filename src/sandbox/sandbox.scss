@@ -1,5 +1,13 @@
 @charset "UTF-8";
 
+/* Fonts */
+@font-face {
+    font-family: 'icon';
+    src: url('../../build/images/icons.woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* Vendor */
 @import "../../external/styles/bourbon/bourbon";
 @import "../../external/styles/neat/neat";

@@ -103,7 +103,7 @@ class ExternalPageTool extends ContentTools.Tool
     ContentTools.ToolShelf.stow(@, 'external-page')
 
     @label = 'External Page'
-    @icon = 'image'
+    @icon = 'external-page'
     
     @canApply: (element, selection) ->
         # Return true if the tool can be applied to the current
