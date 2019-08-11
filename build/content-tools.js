@@ -5544,7 +5544,7 @@
 }).call(this);
 
 (function() {
-  var AttributeUI, ContentTools, CropMarksUI, ExternalImageLinkDialog, ExternalImageTool, ExternalPageDialog, ExternalPageTool, StyleUI, exports, _EditorApp,
+  var AttributeUI, ContentTools, CropMarksUI, ExternalImageLinkDialog, ExternalImageTool, ExternalPageDialog, ExternalPageTool, Font, FontDialog, StyleUI, exports, _EditorApp,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -11085,6 +11085,187 @@
     };
 
     return ExternalPageTool;
+
+  })(ContentTools.Tool);
+
+  FontDialog = (function(_super) {
+    __extends(FontDialog, _super);
+
+    function FontDialog(font) {
+      if (font == null) {
+        font = '';
+      }
+      FontDialog.__super__.constructor.call(this);
+      this._font = font;
+    }
+
+    FontDialog.prototype.mount = function() {
+      var defaultOption, fontName, option, _i, _len, _ref;
+      FontDialog.__super__.mount.call(this);
+      this._domInput = document.createElement('select');
+      this._domInput.setAttribute('class', 'ct-font-view-select');
+      if (ContentTools.FONTS) {
+        defaultOption = document.createElement('option');
+        defaultOption.value = 'none';
+        defaultOption.text = ContentEdit._('Default');
+        this._domInput.appendChild(defaultOption);
+        _ref = ContentTools.FONTS;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          fontName = _ref[_i];
+          option = document.createElement('option');
+          option.value = fontName.replace(/\s/g, '-');
+          option.text = fontName;
+          this._domInput.appendChild(option);
+        }
+      }
+      this._domElement.appendChild(this._domInput);
+      this._domButton = this.constructor.createDiv(['ct-anchored-dialog__button']);
+      this._domElement.appendChild(this._domButton);
+      ContentEdit.addCSSClass(this._domElement, 'ct-font-view');
+      return this._addDOMEventListeners();
+    };
+
+    FontDialog.prototype._addDOMEventListeners = function() {
+      this._domButton.addEventListener('click', (function(_this) {
+        return function(ev) {
+          ev.preventDefault();
+          return _this.save();
+        };
+      })(this));
+      return this._domInput.addEventListener('change', (function(_this) {
+        return function(ev) {
+          return _this.dispatchEvent(_this.createEvent('font-updated', event.target.value));
+        };
+      })(this));
+    };
+
+    FontDialog.prototype.save = function() {
+      return this.dispatchEvent(this.createEvent('save', event.target.value));
+    };
+
+    return FontDialog;
+
+  })(ContentTools.AnchoredDialogUI);
+
+  Font = (function(_super) {
+    __extends(Font, _super);
+
+    function Font() {
+      return Font.__super__.constructor.apply(this, arguments);
+    }
+
+    ContentTools.ToolShelf.stow(Font, 'font');
+
+    Font.label = 'Font';
+
+    Font.icon = 'font';
+
+    Font.canApply = function(element, selection) {
+      var elType;
+      elType = element.type();
+      if ((elType === 'Image') || (elType === 'ImageFixture') || (elType === 'Video')) {
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    Font.apply = function(element, selection, callback) {
+      var allowScrolling, app, caller, dialog, modal, rect, scrollX, scrollY, toolDetail, transparent, _ref;
+      toolDetail = {
+        'tool': this,
+        'element': element,
+        'selection': selection
+      };
+      if (!this.dispatchEditorEvent('tool-apply', toolDetail)) {
+        return;
+      }
+      if (element.storeState) {
+        element.storeState();
+      }
+      app = ContentTools.EditorApp.get();
+      modal = new ContentTools.ModalUI(transparent = true, allowScrolling = true);
+      caller = this;
+      modal.addEventListener('click', function() {
+        this.unmount();
+        caller._resetGoogleFontClass(element, selection);
+        dialog.hide();
+        element.restoreState();
+        return callback(false);
+      });
+      dialog = new FontDialog();
+      dialog.addEventListener('font-updated', (function(ev) {
+        this._resetGoogleFontClass(element, selection);
+        return this._addGoogleFontClass(ev.detail(), element, selection);
+      }).bind(this));
+      dialog.addEventListener('save', function(ev) {
+        modal.hide();
+        dialog.hide();
+        callback(true);
+        return caller.dispatchEditorEvent('tool-applied', toolDetail);
+      });
+      _ref = ContentTools.getScrollPosition(), scrollX = _ref[0], scrollY = _ref[1];
+      rect = ContentSelect.Range.rect();
+      dialog.position([rect.left + (rect.width / 2) + scrollX, rect.top + (rect.height / 2) + scrollY]);
+      app.attach(modal);
+      app.attach(dialog);
+      modal.show();
+      return dialog.show();
+    };
+
+    Font._resetGoogleFontClass = function(element, selection) {
+      var classes, fontClass, fontName, from, span, to, toRemove, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
+      if (selection.isCollapsed()) {
+        if (element.attr('data-font-wrapper') === 'gfont') {
+          classes = element.attr('class');
+          if (classes) {
+            fontClass = classes.match(/\bgf-.*\b/g);
+            _results = [];
+            for (_i = 0, _len = fontClass.length; _i < _len; _i++) {
+              toRemove = fontClass[_i];
+              _results.push(element.removeCSSClass(toRemove));
+            }
+            return _results;
+          }
+        }
+      } else {
+        _ref = selection.get(), from = _ref[0], to = _ref[1];
+        _ref1 = ContentTools.FONTS;
+        _results1 = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          fontName = _ref1[_j];
+          fontClass = 'gf-' + fontName.replace(/\s/g, '-');
+          span = new HTMLString.Tag('span', {
+            'class': fontClass,
+            'data-font-wrapper': 'gfont'
+          });
+          element.content = element.content.unformat(from, to, 'span');
+          element.content.optimize();
+          _results1.push(element.updateInnerHTML());
+        }
+        return _results1;
+      }
+    };
+
+    Font._addGoogleFontClass = function(font, element, selection) {
+      var fontClass, from, span, to, _ref;
+      fontClass = 'gf-' + font;
+      if (selection.isCollapsed()) {
+        element.attr('data-font-wrapper', 'gfont');
+        return element.addCSSClass(fontClass);
+      } else {
+        _ref = selection.get(), from = _ref[0], to = _ref[1];
+        span = new HTMLString.Tag('span', {
+          'class': fontClass,
+          'data-font-wrapper': 'gfont'
+        });
+        element.content = element.content.format(from, to, span);
+        element.content.optimize();
+        return element.updateInnerHTML();
+      }
+    };
+
+    return Font;
 
   })(ContentTools.Tool);
 

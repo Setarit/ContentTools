@@ -68,8 +68,28 @@
 	}
 }
 
+.ct-font {
+	&-view:after {
+		left: 50% !important;
+	}
+
+	&-view {
+		width: auto !important;
+
+		&-select {
+			min-width: 288px;
+			height: 32px;
+			font-size: 16px;
+			color: #000;
+		}
+	}
+}
+
 .ct-tool {
 	&--external-page:before {
 		content: "\e9ca";
+	}
+	&--font:before {
+		content: "\ea5c";
 	}
 }
