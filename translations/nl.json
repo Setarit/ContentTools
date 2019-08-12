@@ -47,5 +47,16 @@
     "Upload": "Uploaden",
     "Value": "Waarde",
     "Video": "Video",
-    "Your changes have not been saved, do you really want to lose them?": "Uw wijzigen zijn niet opgeslagen, wilt u doorgaan zonder deze op te slaan?"
+    "Your changes have not been saved, do you really want to lose them?": "Uw wijzigen zijn niet opgeslagen, wilt u doorgaan zonder deze op te slaan?",
+    "Paste the link to the image":"Link naar de afbeelding invoegen",
+    "Describe the image":"Beschrijving van de afbeelding",
+    "Insert external image":"Externe afbeelding invoegen",
+    "External image":"Externe afbeelding",
+    "Please provide a valid image url and description":"Gelieve een geldige link en beschrijving in te voeren",
+    "Insert external page":"Externe pagina invoegen",
+    "Paste the link to the page":"Link naar de pagina invoegen",
+    "Please provide a valid page url. Be aware that not all websites allow to be embedded":"Gelieve een geldige link in te voegen. Opgelet, niet elke website laat het toe om ingesloten te worden",
+    "External page":"Externe pagina",
+    "Font":"Lettertype"
+
 }

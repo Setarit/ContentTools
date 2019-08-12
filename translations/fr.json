@@ -47,5 +47,15 @@
     "Upload": "Télécharger",
     "Value": "Valeur",
     "Video": "Vidéo",
-    "Your changes have not been saved, do you really want to lose them?": "Vos changements n'ont pas été enregistrés, êtes-vous sûr de vouloir les perdre?"
+    "Your changes have not been saved, do you really want to lose them?": "Vos changements n'ont pas été enregistrés, êtes-vous sûr de vouloir les perdre?",
+    "Paste the link to the image":"Saisissez un lien vers l'image",
+    "Describe the image":"Description de l'image",
+    "Insert external image":"Insérer une image externe",
+    "External image":"Image externe",
+    "Please provide a valid image url and description":"Veuillez entrer un lien valide et une description",
+    "Insert external page":"Insérer une page externe",
+    "Paste the link to the page":"Insérer un lien vers la page",
+    "Please provide a valid page url. Be aware that not all websites allow to be embedded":"Veuillez fournir une URL de page valide. Sachez que tous les sites Web ne permettent pas l'intégration.",
+    "External page":"Page externe",
+    "Font":"Police"
 }
