@@ -28,11 +28,10 @@
          */
         background: rgba($in-page-background, 0.9);
         border: 1px solid rgba(lighten($in-page-background, 10%), 0.5);
-        position: absolute;
+        position: relative;
         left: 0;
         top: 0;        
-        width: 100%;
-        padding: $spacing;        
+        width: 100%;       
 
         /**
          * When the toolbox is being dragged to a new position by the user the
@@ -68,10 +67,10 @@
          */
         @include clearfix;
         padding: $spacing / 2 0;
-
-        &:first-child {
-            padding-top: 0;
-        }
+        display: flex;
+        justify-content: left;
+        flex-wrap: wrap-reverse;
+        float: left;
     }
 
 
