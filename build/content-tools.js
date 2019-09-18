@@ -6400,7 +6400,6 @@
       this._tools = tools;
       this._dragging = false;
       this._draggingOffset = null;
-      this._domGrip = null;
       this._toolUIs = {};
     }
 
@@ -6417,11 +6416,6 @@
       var coord, position, restore;
       this._domElement = this.constructor.createDiv(['ct-widget', 'ct-toolbox']);
       this.parent().domElement().appendChild(this._domElement);
-      this._domGrip = this.constructor.createDiv(['ct-toolbox__grip', 'ct-grip']);
-      this._domElement.appendChild(this._domGrip);
-      this._domGrip.appendChild(this.constructor.createDiv(['ct-grip__bump']));
-      this._domGrip.appendChild(this.constructor.createDiv(['ct-grip__bump']));
-      this._domGrip.appendChild(this.constructor.createDiv(['ct-grip__bump']));
       this._domToolGroups = this.constructor.createDiv(['ct-tool-groups']);
       this._domElement.appendChild(this._domToolGroups);
       this.tools(this._tools);
@@ -6506,12 +6500,10 @@
     };
 
     ToolboxUI.prototype.unmount = function() {
-      ToolboxUI.__super__.unmount.call(this);
-      return this._domGrip = null;
+      return ToolboxUI.__super__.unmount.call(this);
     };
 
     ToolboxUI.prototype._addDOMEventListeners = function() {
-      this._domGrip.addEventListener('mousedown', this._onStartDragging);
       this._handleResize = (function(_this) {
         return function(ev) {
           var containResize;
@@ -6655,9 +6647,6 @@
     };
 
     ToolboxUI.prototype._removeDOMEventListeners = function() {
-      if (this.isMounted()) {
-        this._domGrip.removeEventListener('mousedown', this._onStartDragging);
-      }
       window.removeEventListener('keydown', this._handleKeyDown);
       window.removeEventListener('resize', this._handleResize);
       return clearInterval(this._updateToolsInterval);

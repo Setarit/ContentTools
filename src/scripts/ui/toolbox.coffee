@@ -26,10 +26,6 @@ class ContentTools.ToolboxUI extends ContentTools.WidgetUI
         # point we start dragging.
         @_draggingOffset = null
 
-        # The DOM element relating to the toolbox's grip which allows the user
-        # to drag the toolbox to any position on the page.
-        @_domGrip = null
-
         # A map of tool UI components mounted to the toolbox
         @_toolUIs = {}
 
@@ -60,17 +56,6 @@ class ContentTools.ToolboxUI extends ContentTools.WidgetUI
             'ct-toolbox'
             ])
         @parent().domElement().appendChild(@_domElement)
-
-        # Grip
-        @_domGrip = @constructor.createDiv([
-            'ct-toolbox__grip',
-            'ct-grip'
-            ])
-        @_domElement.appendChild(@_domGrip)
-
-        @_domGrip.appendChild(@constructor.createDiv(['ct-grip__bump']))
-        @_domGrip.appendChild(@constructor.createDiv(['ct-grip__bump']))
-        @_domGrip.appendChild(@constructor.createDiv(['ct-grip__bump']))
 
         # Tools
         @_domToolGroups = @constructor.createDiv(['ct-tool-groups'])
@@ -152,15 +137,10 @@ class ContentTools.ToolboxUI extends ContentTools.WidgetUI
         # Unmount the widget from the DOM
         super()
 
-        @_domGrip = null
-
     # Private methods
 
     _addDOMEventListeners: () ->
         # Add DOM event listeners for the widget
-
-        # Allow the toolbox to be dragged to a new location by the user
-        @_domGrip.addEventListener('mousedown', @_onStartDragging)
 
         # Ensure that when the window is resized the toolbox remains in view
         @_handleResize = (ev) =>
@@ -332,10 +312,6 @@ class ContentTools.ToolboxUI extends ContentTools.WidgetUI
 
     _removeDOMEventListeners: () ->
         # Remove DOM event listeners for the widget
-
-        # Remove mouse event handlers
-        if @isMounted()
-            @_domGrip.removeEventListener('mousedown', @_onStartDragging)
 
         # Remove key events
         window.removeEventListener('keydown', @_handleKeyDown)
