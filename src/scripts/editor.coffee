@@ -122,6 +122,7 @@ class _EditorApp extends ContentTools.ComponentUI
         return new ContentEdit.Text('p', {}, '')
 
     init: (
+            containerId = null,
             queryOrDOMElements,
             namingProp='id',
             fixtureTest=null,
@@ -129,6 +130,9 @@ class _EditorApp extends ContentTools.ComponentUI
             ) ->
 
         # Initialize the editor application
+
+        # set container to attach editor to
+        @_container = containerId
 
         # Set the naming property
         @_namingProp = namingProp
@@ -321,7 +325,12 @@ class _EditorApp extends ContentTools.ComponentUI
     mount: () ->
         # Mount the widget to the DOM
         @_domElement = @constructor.createDiv(['ct-app'])
-        document.body.insertBefore(@_domElement, null)
+        if @_container
+            containerElement = document.getElementById(@_container)
+            firstChild = containerElement.firstChild
+            containerElement.insertBefore(@_domElement, firstChild)
+        else
+            document.body.insertBefore(@_domElement, null)
         @_addDOMEventListeners()
 
     unmount: () ->

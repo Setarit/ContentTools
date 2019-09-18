@@ -8402,7 +8402,10 @@
       return new ContentEdit.Text('p', {}, '');
     };
 
-    _EditorApp.prototype.init = function(queryOrDOMElements, namingProp, fixtureTest, withIgnition) {
+    _EditorApp.prototype.init = function(containerId, queryOrDOMElements, namingProp, fixtureTest, withIgnition) {
+      if (containerId == null) {
+        containerId = null;
+      }
       if (namingProp == null) {
         namingProp = 'id';
       }
@@ -8412,6 +8415,7 @@
       if (withIgnition == null) {
         withIgnition = true;
       }
+      this._container = containerId;
       this._namingProp = namingProp;
       if (fixtureTest) {
         this._fixtureTest = fixtureTest;
@@ -8567,8 +8571,15 @@
     };
 
     _EditorApp.prototype.mount = function() {
+      var containerElement, firstChild;
       this._domElement = this.constructor.createDiv(['ct-app']);
-      document.body.insertBefore(this._domElement, null);
+      if (this._container) {
+        containerElement = document.getElementById(this._container);
+        firstChild = containerElement.firstChild;
+        containerElement.insertBefore(this._domElement, firstChild);
+      } else {
+        document.body.insertBefore(this._domElement, null);
+      }
       return this._addDOMEventListeners();
     };
 

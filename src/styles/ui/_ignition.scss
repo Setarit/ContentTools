@@ -24,6 +24,37 @@
     @include animation-fill-mode(forwards);
 }
 
+@include keyframes(empathize){
+    0% {
+        background-color: $edit-action-color;
+        opacity: 1;
+        scale: 1.5;
+    }
+    25% {
+        background-color: #FFBA49;
+        opacity: 0.5;
+        scale: 1;
+    }
+    50% {
+        background-color: $edit-action-color;
+        opacity: 1;
+    }
+    75% {
+        background-color: #FFBA49;
+        opacity: 0.5;
+    }
+    100% {
+        background-color: $edit-action-color;
+        opacity: 1;
+    }
+}
+
+@mixin animation--empathize(){
+    @include animation(empathize 2s linear);
+    @include animation-iteration-count(1);
+    @include animation-fill-mode(forwards);
+}
+
 .ct-widget {
 
     &.ct-ignition {
@@ -31,9 +62,9 @@
         /**
          * Position of the switch on the page
          */
-        left: 16px;
+        bottom: 90px;
+        right: 128px;
         position: fixed;
-        top: 16px;
 
 
         /**
@@ -54,6 +85,7 @@
 
         &--ready {
             .ct-ignition__button--edit {
+                @include animation--empathize();
                 display: block;
             }
         }
