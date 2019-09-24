@@ -26,25 +26,22 @@
 
 @include keyframes(empathize){
     0% {
-        background-color: $edit-action-color;
         opacity: 1;
-        scale: 1.5;
+        scale: 2;
     }
     25% {
-        background-color: #FFBA49;
-        opacity: 0.5;
+        opacity: 0.2;
         scale: 1;
     }
     50% {
-        background-color: $edit-action-color;
         opacity: 1;
+        scale: 2;
     }
     75% {
-        background-color: #FFBA49;
-        opacity: 0.5;
+        opacity: 0.2;
+        scale: 1;
     }
     100% {
-        background-color: $edit-action-color;
         opacity: 1;
     }
 }
@@ -62,8 +59,8 @@
         /**
          * Position of the switch on the page
          */
-        bottom: 90px;
-        right: 128px;
+        bottom: 90px !important;
+        left: 15px !important;
         position: fixed;
 
 
@@ -150,7 +147,7 @@
                 background: $confirm-action-color;
 
                 &:before {
-                    content: '\ea10';
+                    content: '\e962';
                 }
 
                 &:hover {
