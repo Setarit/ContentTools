@@ -29,8 +29,8 @@
         background: rgba($in-page-background, 0.9);
         border: 1px solid rgba(lighten($in-page-background, 10%), 0.5);
         position: relative;
-        left: 0;
-        top: 0;        
+        left: 0 !important;
+        top: 0 !important;        
         width: 100%;       
 
         /**
